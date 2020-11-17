@@ -23,10 +23,6 @@ i {
     transition: all .2s
 }
 
-.hidden {
-    display:none;
-}
-
 .card-header:first-child {
     border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0
 }
@@ -121,6 +117,13 @@ i {
     position: relative;
     align-items: center
 }
+td {
+    text-align: left;
+}
+
+.hidden {
+    display: none;
+}
 
 .widget-content .widget-content-right.widget-content-actions {
     visibility: hidden;
@@ -130,6 +133,10 @@ i {
 
 .widget-content .widget-content-right {
     margin-left: auto
+}
+
+.widget-body {
+    font-size: 12px;
 }
 
 .btn:not(:disabled):not(.disabled) {

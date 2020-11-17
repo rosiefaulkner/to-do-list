@@ -1,7 +1,7 @@
 <?php
 
 # PREPARED STATEMENTS (prepare & execute)
-
+// Create task
 function publishTask($title, $body, $author)
 {
     $host = 'localhost';
@@ -20,6 +20,66 @@ function publishTask($title, $body, $author)
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['title' => $title, 'body' => $body, 'author' => $author]);
 }
+
+// Read tasks
+function loadTasks()
+{
+    $host = 'localhost';
+    $user = 'test';
+    $password = 'test';
+    $dbname = 'todo';
+
+
+    // Set DSN data source name
+    $dsn = 'mysql:host=' . $host . ';dbname=' . $dbname;
+
+    // Create PDO instance
+    $pdo = new PDO($dsn, $user, $password);
+
+    // INSERT DATA
+    $sql = 'SELECT title, body, author FROM tasks';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+if (isset($_POST['publish'])) {
+    // INSERT DATA
+    $title = $_POST['title'];
+    $body = $_POST['body'];
+    $author = $_POST['author'];
+
+    publishTask($title, $body, $author);
+}
+
+// Edits a task
+function updateTask($title, $body, $author)
+{
+    $host = 'localhost';
+    $user = 'test';
+    $password = 'test';
+    $dbname = 'todo';
+
+    // Set DSN data source name
+    $dsn = 'mysql:host=' . $host . ';dbname=' . $dbname;
+
+    // Create PDO instance
+    $pdo = new PDO($dsn, $user, $password);
+
+    // SET DATA
+    $sql = 'SELECT * FROM tasks WHERE id=$id';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll();
+
+}
+
+
+// Deletes a task
+function deleteTask()
+{
+}
+
+
 define('SITENAME', 'To Do List');
 
 ?>
@@ -39,7 +99,7 @@ define('SITENAME', 'To Do List');
 <body>
     <div class="d-flex justify-content-center container">
         <div class="col-md-12 justify-content-center">
-
+            <!-- Publish/Update Post -->
             <div id='publishTask' class='hidden alert alert-success' role='alert'>
                 <h4 class='alert-heading'>Add A Task</h4>
                 <hr>
@@ -50,18 +110,14 @@ define('SITENAME', 'To Do List');
                     <!-- Body -->
                     <textarea class='form-control' name='body' placeholder='Input task body' rows='3' required></textarea>
                     <div class='mt-4 d-block text-right'>
-                        <button class='mr-2 btn btn-link btn-sm'>Cancel</button>
-                        <input type='submit' class='btn btn-success' name='publish' value='Publish' />
+                        <button class='mr-2 btn btn-link btn-sm' id='hide'>Cancel</button>
+                           <input type='submit' class='btn btn-warning edit-btn' name='edit-btn' value='Edit' />
+                           <input type='submit' class='btn btn-success publish-btn' name='publish' value='Publish' />
                     </div>
-                    <?php 
-                    
-                    $title = $_POST['title'];
-                    $body = $_POST['body'];
-                    $author = $_POST['author'];
-                    publishTask($title, $body, $author);
-
-                    ?>
+                </form>
             </div>
+            <!-- End of Publish/Update Post -->
+
             <div class="card-hover-shadow-2x mb-3 card justify-content-center">
                 <div class="card-header-tab card-header">
                     <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i class="fa fa-tasks"></i>&nbsp;Task List</div>
@@ -72,55 +128,6 @@ define('SITENAME', 'To Do List');
                             <div class="ps-content">
                                 <ul class=" list-group list-group-flush">
                                     <li class="list-group-item">
-                                        <div class="todo-indicator bg-warning"></div>
-                                        <div class="widget-content p-0">
-                                            <div class="widget-content-wrapper">
-                                                <div class="widget-content-left mr-2">
-                                                    <div class="custom-checkbox custom-control"> <input class="custom-control-input" id="exampleCustomCheckbox12" type="checkbox"><label class="custom-control-label" for="exampleCustomCheckbox12">&nbsp;</label> </div>
-                                                </div>
-                                                <div class="widget-content-left">
-                                                    <div class="widget-heading">Call Sam For payments <div class="badge badge-danger ml-2">Rejected</div>
-                                                    </div>
-                                                    <div class="widget-subheading"><i>By Bob</i></div>
-                                                </div>
-                                                <div class="widget-content-right"> <button class="border-0 btn-transition btn btn-outline-success"> <i class="fa fa-check"></i></button> <button class="border-0 btn-transition btn btn-outline-danger"> <i class="fa fa-trash"></i> </button> </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="todo-indicator bg-focus"></div>
-                                        <div class="widget-content p-0">
-                                            <div class="widget-content-wrapper">
-                                                <div class="widget-content-left mr-2">
-                                                    <div class="custom-checkbox custom-control"><input class="custom-control-input" id="exampleCustomCheckbox1" type="checkbox"><label class="custom-control-label" for="exampleCustomCheckbox1">&nbsp;</label></div>
-                                                </div>
-                                                <div class="widget-content-left">
-                                                    <div class="widget-heading">Make payment to Bluedart</div>
-                                                    <div class="widget-subheading">
-                                                        <div>By Johnny <div class="badge badge-pill badge-info ml-2">NEW</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="widget-content-right"> <button class="border-0 btn-transition btn btn-outline-success"> <i class="fa fa-check"></i></button> <button class="border-0 btn-transition btn btn-outline-danger"> <i class="fa fa-trash"></i> </button> </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="todo-indicator bg-primary"></div>
-                                        <div class="widget-content p-0">
-                                            <div class="widget-content-wrapper">
-                                                <div class="widget-content-left mr-2">
-                                                    <div class="custom-checkbox custom-control"><input class="custom-control-input" id="exampleCustomCheckbox4" type="checkbox"><label class="custom-control-label" for="exampleCustomCheckbox4">&nbsp;</label></div>
-                                                </div>
-                                                <div class="widget-content-left flex2">
-                                                    <div class="widget-heading">Office rent </div>
-                                                    <div class="widget-subheading">By Samino!</div>
-                                                </div>
-                                                <div class="widget-content-right"> <button class="border-0 btn-transition btn btn-outline-success"> <i class="fa fa-check"></i></button> <button class="border-0 btn-transition btn btn-outline-danger"> <i class="fa fa-trash"></i> </button> </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
                                         <div class="todo-indicator bg-info"></div>
                                         <div class="widget-content p-0">
                                             <div class="widget-content-wrapper">
@@ -128,75 +135,69 @@ define('SITENAME', 'To Do List');
                                                     <div class="custom-checkbox custom-control"><input class="custom-control-input" id="exampleCustomCheckbox2" type="checkbox"><label class="custom-control-label" for="exampleCustomCheckbox2">&nbsp;</label></div>
                                                 </div>
                                                 <div class="widget-content-left">
-                                                    <div class="widget-heading">Office grocery shopping</div>
-                                                    <div class="widget-subheading">By Tida</div>
+                                                    <table>
+                                                        <?php foreach (loadTasks() as $task) { ?>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class='widget-heading'><?php echo $task['title'] ?></div>
+                                                                    <div class='widget-subheading'><?php echo $task['author'] ?></div>
+                                                                    <div class='widget-body'><?php echo $task['body'] ?></div>
+                                                                </td>
+                                                                
+                                                                    <td>
+                                                                        <div class='widget-actions widget-content-right'>
+                                                                    </td>
+                                                                    <form action='index.php' method='post'>
+                                                                    <td><button class="border-0 btn-transition btn btn-outline-success"><i class="fa fa-check"></i></button></td>
+                                                                    <td>
+                                                                    <input type="button" class="order-0 btn-transition btn btn-outline-info" name="edit" value="Edit" id="edit" /></td>
+                                                                    <td><button class="border-0 btn-transition btn btn-outline-danger"> <i class="fa fa-trash"></i></button>
+                                                        </form>
                                                 </div>
-                                                <div class="widget-content-right"> <button class="border-0 btn-transition btn btn-outline-success"> <i class="fa fa-check"></i></button> <button class="border-0 btn-transition btn btn-outline-danger"> <i class="fa fa-trash"></i> </button> </div>
+                                                </td>
+                                                
+                                                </tr>
+                                            <?php } ?>
+                                            </table>
                                             </div>
+
                                         </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="todo-indicator bg-success"></div>
-                                        <div class="widget-content p-0">
-                                            <div class="widget-content-wrapper">
-                                                <div class="widget-content-left mr-2">
-                                                    <div class="custom-checkbox custom-control"><input class="custom-control-input" id="exampleCustomCheckbox3" type="checkbox"><label class="custom-control-label" for="exampleCustomCheckbox3">&nbsp;</label></div>
-                                                </div>
-                                                <div class="widget-content-left flex2">
-                                                    <div class="widget-heading">Ask for Lunch to Clients</div>
-                                                    <div class="widget-subheading">By Office Admin</div>
-                                                </div>
-                                                <div class="widget-content-right"> <button class="border-0 btn-transition btn btn-outline-success"> <i class="fa fa-check"></i></button> <button class="border-0 btn-transition btn btn-outline-danger"> <i class="fa fa-trash"></i> </button> </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="todo-indicator bg-success"></div>
-                                        <div class="widget-content p-0">
-                                            <div class="widget-content-wrapper">
-                                                <div class="widget-content-left mr-2">
-                                                    <div class="custom-checkbox custom-control"><input class="custom-control-input" id="exampleCustomCheckbox10" type="checkbox"><label class="custom-control-label" for="exampleCustomCheckbox10">&nbsp;</label></div>
-                                                </div>
-                                                <div class="widget-content-left flex2">
-                                                    <div class="widget-heading">Client Meeting at 11 AM</div>
-                                                    <div class="widget-subheading">By CEO</div>
-                                                </div>
-                                                <div class="widget-content-right"> <button class="border-0 btn-transition btn btn-outline-success"> <i class="fa fa-check"></i></button> <button class="border-0 btn-transition btn btn-outline-danger"> <i class="fa fa-trash"></i> </button> </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
                             </div>
+                            </li>
+                            </ul>
                         </div>
-                    </perfect-scrollbar>
                 </div>
-                <form method="post">
-                    <div class="d-block text-right card-footer">
-                        <input type="submit" class="btn btn-primary" name="add" value="Add Task" id="add" />
-                    </div>
                 </form>
+                </perfect-scrollbar>
             </div>
+
+            <div class="d-block text-right card-footer">
+                <input type="button" class="btn btn-primary" name="add" value="Add Task" id="add" />
+            </div>
+
         </div>
+    </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <?php
-    if ($_POST['publish']) {
-        // INSERT DATA
-        $title = $_POST['title'];
-        $body = $_POST['body'];
-        $author = $_POST['author'];
-
-        $sql = 'INSERT INTO tasks(title, body, author) VALUES(:title, :body, :author)';
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['title' => $title, 'body' => $body, 'author' => $author]);
-    }
-    ?>
     <script>
         $(document).ready(function() {
             $("#add").click(function() {
                 $("#publishTask").removeClass("hidden");
+                $(".edit-btn").addClass("hidden");
+                $(".publish-btn").removeClass("hidden");
             });
+
+            $("#edit").click(function() {
+                $("#publishTask").removeClass("hidden");
+                $(".edit-btn").removeClass("hidden");
+                $(".publish-btn").addClass("hidden");
+            });
+
+            $("#hide").click(function() {
+                $("#publishTask").addClass("hidden");
+            });
+
         });
     </script>
 </body>
